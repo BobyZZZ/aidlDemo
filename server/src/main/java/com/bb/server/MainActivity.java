@@ -10,6 +10,8 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.SeekBar;
 
+import com.bb.aidl.State;
+
 public class MainActivity extends AppCompatActivity {
     String TAG = "MainActivity";
 

@@ -1,10 +1,10 @@
-package com.bb.server;
+package com.bb.aidl;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 public class State implements Parcelable {
-    int code = -1;
+    public int code = -1;
 
     public int getCode() {
         return code;

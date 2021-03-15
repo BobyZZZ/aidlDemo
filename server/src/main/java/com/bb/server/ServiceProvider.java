@@ -8,6 +8,10 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.bb.aidl.Callback;
+import com.bb.aidl.IServiceProvider;
+import com.bb.aidl.State;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +45,7 @@ public class ServiceProvider extends Service {
         return mMyBinder;
     }
 
-    public class MyBinder extends InfoProvider.Stub {
+    public class MyBinder extends IServiceProvider.Stub {
         private List<Callback> mCallbacks;
 
         MyBinder() {
