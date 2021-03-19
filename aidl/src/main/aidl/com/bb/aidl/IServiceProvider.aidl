@@ -7,5 +7,7 @@ import com.bb.aidl.Callback;
 *Server's Interface define
 */
 interface IServiceProvider {
-    void setCallback(in Callback callback);
+    void addCallback(in Callback callback);
+    void removeCallback(in Callback callback);
+    void test(in String msg);
 }

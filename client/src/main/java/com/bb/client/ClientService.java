@@ -11,7 +11,7 @@ import com.bb.aidl.ServiceProxy;
 import com.bb.aidl.State;
 
 public class ClientService extends Service {
-    String TAG = "ClientService";
+    String TAG = "Client1";
 
     public ClientService() {
     }
@@ -34,10 +34,15 @@ public class ClientService extends Service {
         instance.getService(new ServiceProvider.ConnectCallback() {
             @Override
             public void onServiceConnected(ServiceProxy serviceProxy) {
-                serviceProxy.setCallback(new IServiceToClient() {
+                serviceProxy.addCallback(new IServiceToClient() {
                     @Override
                     public void onCallback(State state) {
                         Log.e(TAG, "onCallback: " + state.code);
+                    }
+
+                    @Override
+                    public String from() {
+                        return TAG;
                     }
                 });
             }

@@ -1,3 +1,4 @@
+include ':client2'
 rootProject.name='AIDLDemo'
 include ':app'
 include ':server'

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.util.Log;
 
 import static android.content.Context.BIND_AUTO_CREATE;
@@ -14,17 +15,18 @@ import static android.content.Context.BIND_AUTO_CREATE;
  * 优点：aidl代码集中在库中实现，Client端不需要实现任何aidl。
  */
 public class ServiceProvider {
+    private final Context mContext;
     String TAG = "ServiceProvider";
     static ServiceProvider mInstance;
     private IServiceProvider mService;
     private ServiceProxy mServiceProxy;
 
     private ServiceProvider(Context context) {
+        mContext = context;
         bindServices(context);
     }
 
     private void bindServices(Context context) {
-        Log.d(TAG, "bindServices() called with: context = [" + context + "]");
         ComponentName componentName = new ComponentName("com.bb.server", "com.bb.server.ServiceProvider");
         Intent intent = new Intent();
         intent.setComponent(componentName);
@@ -49,7 +51,8 @@ public class ServiceProvider {
     private ServiceConnection mConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.w(TAG, "onServiceConnected() called with: name = [" + name + "], service = [" + service + "]");
+            Log.w(TAG, "onServiceConnected() called with: name = [" + name + "], 客户端"+mContext.getPackageName()
+                    +"获取到的Binder内存地址 = [" + service + "]");
             mService = IServiceProvider.Stub.asInterface(service);
             if (mConnectCallback != null) {
                 mConnectCallback.onServiceConnected(new ServiceProxy(mService));

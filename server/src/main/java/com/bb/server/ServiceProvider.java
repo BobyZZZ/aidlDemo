@@ -3,6 +3,7 @@ package com.bb.server;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.util.Log;
 
@@ -41,31 +42,46 @@ public class ServiceProvider extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d(TAG, "onBind() called with: intent = [" + intent + "]");
+        Log.d(TAG, "onBind() called with: 服务端mMyBinder内存地址 = [" + mMyBinder + "]");
         return mMyBinder;
     }
 
     public class MyBinder extends IServiceProvider.Stub {
-        private List<Callback> mCallbacks;
+        private RemoteCallbackList<Callback> mCallbacks;
 
         MyBinder() {
-            mCallbacks = new ArrayList<>();
+            mCallbacks = new RemoteCallbackList<>();
         }
 
         @Override
-        public void setCallback(Callback callback) throws RemoteException {
-            Log.d(TAG, "setCallback: ");
-            mCallbacks.add(callback);
+        public void addCallback(Callback callback) throws RemoteException {
+            Log.d(TAG, "addCallback: " + callback.from());
+            mCallbacks.register(callback);
         }
 
+        @Override
+        public void removeCallback(Callback callback) throws RemoteException {
+            Log.d(TAG, "removeCallback: " + callback.from());
+            mCallbacks.unregister(callback);
+        }
+
+        @Override
+        public void test(String msg) throws RemoteException {
+            Log.d(TAG, "服务端接收到: " + msg);
+        }
+
+
         public void update(State state) {
-            Log.w(TAG, "update() called with: state = [" + state.code + "],callback's size: " + mCallbacks.size());
-            for (Callback callback : mCallbacks) {
-                try {
-                    callback.onCallback(state);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
+            try {
+                int count = mCallbacks.beginBroadcast();
+                Log.w(TAG, "update() called with: state = [" + state.code + "],callback's size: "
+                        + mCallbacks.getRegisteredCallbackCount() + "------count: " + count);
+                for (int i = 0; i < count; i++) {
+                    mCallbacks.getBroadcastItem(i).onCallback(state);
                 }
+                mCallbacks.finishBroadcast();
+            } catch (RemoteException e) {
+                e.printStackTrace();
             }
         }
     }

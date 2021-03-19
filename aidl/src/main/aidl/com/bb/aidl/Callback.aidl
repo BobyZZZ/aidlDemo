@@ -8,4 +8,5 @@ import com.bb.aidl.State;
 */
 interface Callback {
     void onCallback(in State data);
+    String from();
 }

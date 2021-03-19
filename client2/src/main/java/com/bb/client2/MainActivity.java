@@ -1,8 +1,7 @@
-package com.bb.client;
+package com.bb.client2;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,15 +11,14 @@ import com.bb.aidl.ServiceProvider;
 import com.bb.aidl.ServiceProxy;
 import com.bb.aidl.State;
 
-public class ClientMainActivity extends AppCompatActivity {
-    String TAG = "Client1";
+public class MainActivity extends AppCompatActivity {
+    String TAG = "Client2";
     private ServiceProxy mServiceProxy;
-    private IServiceToClient mServiceToClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_client_main);
+        setContentView(R.layout.activity_main);
 
         ServiceProvider instance = ServiceProvider.getInstance(this);
         getService(instance);
@@ -31,7 +29,7 @@ public class ClientMainActivity extends AppCompatActivity {
             @Override
             public void onServiceConnected(ServiceProxy serviceProxy) {
                 mServiceProxy = serviceProxy;
-                mServiceToClient = new IServiceToClient() {
+                mServiceProxy.addCallback(new IServiceToClient() {
                     @Override
                     public void onCallback(State state) {
                         Log.e(TAG, "onCallback: " + state.code);
@@ -41,15 +39,12 @@ public class ClientMainActivity extends AppCompatActivity {
                     public String from() {
                         return TAG;
                     }
-                };
-                mServiceProxy.addCallback(mServiceToClient);
+                });
             }
         });
     }
 
     public void onClick(View view) {
         mServiceProxy.test(TAG + "发来的消息");
-        Log.d(TAG, "onClick: 反注册回调");
-        mServiceProxy.removeCallback(mServiceToClient);
     }
 }
